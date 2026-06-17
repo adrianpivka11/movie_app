@@ -1,0 +1,231 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #10151f 0%, #07122f 100%);
+  color: #fff8e7;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.app {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* veľký emocionálny obrázok */
+.logo {
+  width: min(100%, 560px);
+  height: auto;
+  display: block;
+  margin-bottom: 18px;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+/* PopChoice */
+h1 {
+  margin: 0 0 34px;
+  font-size: clamp(42px, 7vw, 72px);
+  line-height: 1;
+  font-style: italic;
+  font-weight: 800;
+  color: #fff8e7;
+  text-shadow: 3px 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* form ako pekný panel */
+form {
+  width: min(100%, 520px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  border-radius: 24px;
+  background: rgba(255, 248, 231, 0.08);
+  border: 1px solid rgba(255, 204, 0, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+label {
+  margin-top: 6px;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #fff8e7;
+}
+
+textarea {
+  width: 100%;
+  min-height: 82px;
+  padding: 14px 16px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  resize: vertical;
+
+  background: #fff1b8;
+  color: #111827;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.35;
+
+  outline: none;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+textarea::placeholder {
+  color: rgba(17, 24, 39, 0.65);
+}
+
+textarea:focus {
+  border-color: #ff3b3b;
+  background: #fff7d6;
+  box-shadow:
+    0 0 0 4px rgba(255, 204, 0, 0.25),
+    inset 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* button zladený so žltým pozadím obrázka */
+button {
+  margin-top: 22px;
+  width: 100%;
+  padding: 18px 24px;
+  border: none;
+  border-radius: 16px;
+
+  background: linear-gradient(135deg, #ffcc00 0%, #ff9f1c 100%);
+  color: #111827;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+
+  cursor: pointer;
+  box-shadow: 0 10px 0 #c96f00, 0 18px 35px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  
+  align-self: center;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 13px 0 #c96f00, 0 22px 40px rgba(0, 0, 0, 0.4);
+}
+
+button:active {
+  transform: translateY(4px);
+  box-shadow: 0 5px 0 #c96f00, 0 10px 22px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 520px) {
+  .app {
+    padding: 24px 18px 40px;
+  }
+
+  .logo {
+    border-radius: 14px;
+  }
+
+  form {
+    padding: 22px;
+  }
+
+  button {
+    font-size: 26px;
+  }
+}
+
+
+.movie-page {
+  min-height: 100vh;
+  justify-content: center;
+}
+
+.movie-card {
+  width: min(100%, 520px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px;
+  border-radius: 24px;
+
+  background: rgba(255, 248, 231, 0.08);
+  border: 1px solid rgba(255, 204, 0, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+.movie-title {
+  margin: 0 0 20px;
+  text-align: center;
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 1.05;
+  font-style: normal;
+  font-weight: 900;
+  color: #fff8e7;
+  text-shadow: 3px 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.movie-title span {
+  white-space: nowrap;
+}
+
+.movie-poster {
+  width: 100%;
+  max-width: 390px;
+  border-radius: 18px;
+  display: block;
+  object-fit: cover;
+
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+}
+
+.movie-description {
+  width: 100%;
+  margin: 28px 0 0;
+  color: #fff8e7;
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.movie-actions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.movie-actions button {
+  margin-top: 0;
+  padding: 16px 18px;
+  font-size: 24px;
+  border-radius: 16px;
+}
+
+@media (max-width: 520px) {
+  .movie-card {
+    padding: 22px;
+  }
+
+  .movie-description {
+    font-size: 18px;
+  }
+
+  .movie-actions {
+    gap: 10px;
+  }
+
+  .movie-actions button {
+    font-size: 21px;
+    padding: 15px 12px;
+  }
+}
