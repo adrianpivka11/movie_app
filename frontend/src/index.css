@@ -7,7 +7,7 @@ body {
   min-height: 100vh;
   background: linear-gradient(180deg, #10151f 0%, #07122f 100%);
   color: #fff8e7;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Roboto Slab", serif;
 }
 
 .app {
@@ -38,9 +38,10 @@ h1 {
   font-weight: 800;
   color: #fff8e7;
   text-shadow: 3px 4px 0 rgba(0, 0, 0, 0.25);
+  font-family: Georgia, "Times New Roman", serif;
 }
 
-/* form ako pekný panel */
+
 form {
   width: min(100%, 520px);
   display: flex;
@@ -51,7 +52,6 @@ form {
   background: rgba(255, 248, 231, 0.08);
   border: 1px solid rgba(255, 204, 0, 0.25);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 label {
@@ -63,6 +63,8 @@ label {
 }
 
 textarea {
+  font-family: "Roboto Slab", serif;
+  font-weight: 300;
   width: 100%;
   min-height: 82px;
   padding: 14px 16px;
@@ -73,7 +75,6 @@ textarea {
   background: #fff1b8;
   color: #111827;
 
-  font-family: Georgia, "Times New Roman", serif;
   font-size: 16px;
   line-height: 1.35;
 
@@ -104,7 +105,7 @@ button {
   background: linear-gradient(135deg, #ffcc00 0%, #ff9f1c 100%);
   color: #111827;
 
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Roboto Slab", serif;
   font-size: 30px;
   font-weight: 900;
 
@@ -188,12 +189,13 @@ button:active {
 }
 
 .movie-description {
+  font-family: "Roboto Slab", serif;
   width: 100%;
   margin: 28px 0 0;
   color: #fff8e7;
   font-size: 20px;
   line-height: 1.35;
-  font-weight: 600;
+  font-weight: 300;
 }
 
 .movie-actions {
