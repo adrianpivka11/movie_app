@@ -7,7 +7,7 @@ body {
   min-height: 100vh;
   background: linear-gradient(180deg, #10151f 0%, #07122f 100%);
   color: #fff8e7;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Roboto Slab", serif;
 }
 
 .app {
@@ -38,9 +38,10 @@ h1 {
   font-weight: 800;
   color: #fff8e7;
   text-shadow: 3px 4px 0 rgba(0, 0, 0, 0.25);
+  font-family: Georgia, "Times New Roman", serif;
 }
 
-/* form ako pekný panel */
+
 form {
   width: min(100%, 520px);
   display: flex;
