@@ -28,7 +28,7 @@ export default function App() {
 
     const moviesWithIndexToRender: RecommendedMovie[] = receivedMovies.map((movie, index) => ({
       title: movie.title,
-      year: movie.release_date,
+      year: movie.release_date ? movie.release_date.slice(0, 4) : "Unknown",
       poster_path: movie.poster_path,
       ai_response: movie.overview,
       index,
