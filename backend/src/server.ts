@@ -76,7 +76,7 @@ app.use(
   }
 );
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Movie app backend listening on http://localhost:${port}`);
 });
 

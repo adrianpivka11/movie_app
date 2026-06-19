@@ -25,7 +25,7 @@ export default function SearchForm({ getMovies }: SearchFormProps) {
       <h1>MovieChoice</h1>
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="mood">What's your favorite movie and why?</label>
+        <label htmlFor="mood">What mood do you prefer?</label>
         <textarea
           id="mood"
           name="mood"

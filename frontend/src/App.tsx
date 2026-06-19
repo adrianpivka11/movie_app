@@ -32,7 +32,7 @@ export default function App() {
       poster_path: movie.poster_path,
       ai_response: movie.overview,
       index,
-      isLast: index === moviesWithIndexToRender.length - 1
+      isLast: index === receivedMovies.length - 1
     }));
 
     setMoviesArr(moviesWithIndexToRender);
