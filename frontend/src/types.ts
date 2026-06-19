@@ -1,7 +1,9 @@
+
+
 export type FormAnswers = {
-  favoriteMovie: string;
   mood: string;
-  tone: string;
+  genre: string;
+  story: string;
 };
 
 

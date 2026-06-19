@@ -5,9 +5,9 @@ import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 
 type RecommendRequest = {
-  favoriteMovie: string;
   mood: string;
-  tone: string;
+  genre: string;
+  story: string;
 };
 
 const port = Number(process.env.PORT ?? 3001);
@@ -80,13 +80,13 @@ app.listen(port, () => {
   console.log(`Movie app backend listening on http://localhost:${port}`);
 });
 
-function buildRecommendationPrompt({ favoriteMovie, mood, tone }: RecommendRequest) {
+function buildRecommendationPrompt({ mood, genre, story }: RecommendRequest) {
   
   
   return [
-    `Favorite movie and reason: ${favoriteMovie}`,
-    `Mood or era preference: ${mood}`,
-    `Desired tone: ${tone}`
+    `Mood: ${mood}`,
+    `Genre or mix of genres: ${genre}`,
+    `Desired story: ${story}`
   ].join("\n");
 }
 

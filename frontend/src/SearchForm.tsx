@@ -1,20 +1,19 @@
 import type { FormAnswers } from "./types";
 
 type SearchFormProps = {
-  favoriteMovie: string;
   getMovies: (formAnswers: FormAnswers) => Promise<void>;
 };
 
-export default function SearchForm({ favoriteMovie, getMovies }: SearchFormProps) {
+export default function SearchForm({ getMovies }: SearchFormProps) {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
 
     const formAnswers: FormAnswers = {
-      favoriteMovie: formData.get("favoriteMovie")?.toString() ?? "",
       mood: formData.get("mood")?.toString() ?? "",
-      tone: formData.get("tone")?.toString() ?? ""
+      genre: formData.get("genre")?.toString() ?? "",
+      story: formData.get("story")?.toString() ?? ""
     };
 
     void getMovies(formAnswers);
@@ -26,28 +25,25 @@ export default function SearchForm({ favoriteMovie, getMovies }: SearchFormProps
       <h1>MovieChoice</h1>
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="favoriteMovie">What's your favorite movie and why?</label>
-        <textarea
-          id="favoriteMovie"
-          name="favoriteMovie"
-          placeholder="The Shawshank Redemption because it taught me to never give up hope no matter how hard life gets"
-          defaultValue="The Shawshank Redemption because it taught me to never give up hope no matter how hard life gets"
-        />
-
-        <label htmlFor="mood">Are you in the mood for something new or a classic?</label>
+        <label htmlFor="mood">What's your favorite movie and why?</label>
         <textarea
           id="mood"
           name="mood"
-          placeholder="I want to watch movie classics that were released after 2000"
-          defaultValue="I want to watch movie classics that were released after 2000"
+          placeholder="I’m looking for a light-hearted, funny movie that will help me relax. I’d prefer something fast-paced, not too romantic, and with a happy ending."
         />
 
-        <label htmlFor="tone">Do you wanna have fun or do you want something serious?</label>
+        <label htmlFor="genre">What genre or combination of genres would you prefer?</label>
         <textarea
-          id="tone"
-          name="tone"
-          placeholder="I want to watch something stupid and fun. I need something simple after stressful day."
-          defaultValue="I want to watch something stupid and fun. I need something simple after stressful day."
+          id="genre"
+          name="genre"
+          placeholder="I’d like a mix of mystery and science fiction, but not too much horror."
+        />
+
+        <label htmlFor="story">What would you like the story to be about?</label>
+        <textarea
+          id="story"
+          name="story"
+          placeholder="I’d like a mix of mystery and science fiction, ideally with some psychological elements, but not too much horror."
         />
 
         <button type="submit">Let's Go</button>
