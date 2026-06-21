@@ -4,7 +4,7 @@ Full-stack educational project that recommends movies based on the user's prefer
 
 The application uses **OpenAI text embeddings** and **vector similarity search** to find relevant movies stored in a Supabase PostgreSQL database. 
 
-Available and deploy on render.com: https://movie-app-frontend-ks5e.onrender.com/
+Available and deployed on render.com: https://movie-app-frontend-ks5e.onrender.com/
 ---
 
 ## Overview
