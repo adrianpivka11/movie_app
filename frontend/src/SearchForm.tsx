@@ -6,7 +6,7 @@ type SearchFormProps = {
   isLoading: boolean;
 };
 
-export default function SearchForm({ getMovies }: SearchFormProps) {
+export default function SearchForm({ getMovies, isLoading, handleButtonClick }: SearchFormProps) {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -49,8 +49,8 @@ export default function SearchForm({ getMovies }: SearchFormProps) {
         />
 
         <button type="submit" onClick={handleButtonClick} className= {isLoading ? "button-loading" : ""}> 
-          
-        {isLoading ? "is Loading..." : "Search"} 
+          {isLoading ? "is Loading..." : "Search"}  
+        </button>
       </form>
     </main>
   );
