@@ -3,9 +3,11 @@ import type { FormAnswers } from "./types";
 type SearchFormProps = {
   favoriteMovie: string;
   getMovies: (formAnswers: FormAnswers) => Promise<void>;
+  handleButtonClick: () => void;
+  isLoading: boolean
 };
 
-export default function SearchForm({ favoriteMovie, getMovies }: SearchFormProps) {
+export default function SearchForm({ favoriteMovie, getMovies, handleButtonClick, isLoading }: SearchFormProps) {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -50,7 +52,11 @@ export default function SearchForm({ favoriteMovie, getMovies }: SearchFormProps
           defaultValue="I want to watch something stupid and fun. I need something simple after stressful day."
         />
 
-        <button type="submit">Let's Go</button>
+        <button type="submit" onClick={handleButtonClick} className= {isLoading ? "button-loading" : ""}> 
+          
+        {isLoading ? "is Loading..." : "Search"} 
+
+        </button>
       </form>
     </main>
   );
