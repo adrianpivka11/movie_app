@@ -126,6 +126,29 @@ button:active {
   box-shadow: 0 5px 0 #c96f00, 0 10px 22px rgba(0, 0, 0, 0.35);
 }
 
+.button-loading {
+    animation: zenLoadingPulse 1.2s ease-in-out infinite;
+    pointer-events: none
+}
+
+@keyframes zenLoadingPulse {
+    0% {
+        transform: scale(0.98);
+        filter: brightness(0.96);
+    }
+    50% {
+        transform: scale(1);
+        filter: brightness(1.03);
+    }
+    100% {
+        transform: scale(0.98);
+        filter: brightness(0.96);
+    }}
+
+
+
+
+
 @media (max-width: 520px) {
   .app {
     padding: 24px 18px 40px;
