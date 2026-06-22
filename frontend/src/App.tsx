@@ -9,7 +9,11 @@ const API_URL = import.meta.env.VITE_API_URL ?? "";
 export default function App() {
   const [moviesArr, setMoviesArr] = useState<RecommendedMovie[]>([]);
   const [movieIndex, setMovieIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false)
   
+  function handleButtonClick(){
+    setIsLoading(prevIsLoading => !prevIsLoading)
+  }
 
   async function getMovies(formAnswers: FormAnswers) {
 
@@ -73,16 +77,17 @@ export default function App() {
   function newSearchRefreshPage() {
     setMoviesArr([]);
     setMovieIndex(0);
+    setIsLoading(prevIsLoading => !prevIsLoading)
   }
 
   return moviesArr.length === 0 ? (
-      <SearchForm getMovies={getMovies} />
-    ) : (
-      <Movie
-        moviesObj={moviesArr[movieIndex]}
-        increaseIndex={increaseIndex}
-        decreaseIndex={decreaseIndex}
-        newSearchRefreshPage={newSearchRefreshPage}
-      />
-    );
+    <SearchForm getMovies={getMovies} handleButtonClick={handleButtonClick} isLoading={isLoading} />
+  ) : (
+    <Movie
+      moviesObj={moviesArr[movieIndex]}
+      increaseIndex={increaseIndex}
+      decreaseIndex={decreaseIndex}
+      newSearchRefreshPage={newSearchRefreshPage}
+    />
+  );
 }
