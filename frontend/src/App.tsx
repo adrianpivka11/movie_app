@@ -1,13 +1,13 @@
 import { useState } from "react";
 import SearchForm from "./SearchForm";
 import Movie from "./Movie";
-import type { FormAnswers, RecommendedMovie, MovieAPI } from "./types";
+import type { FormAnswers, MoviesFromServer } from "./types";
 
 
 
 
 export default function App() {
-  const [moviesArr, setMoviesArr] = useState<RecommendedMovie[]>([]);
+  const [moviesArr, setMoviesArr] = useState<MoviesFromServer[]>([]);
   const [movieIndex, setMovieIndex] = useState(0);
   const [favoriteMovie, setFavoriteMovie] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +17,7 @@ export default function App() {
   }
 
   async function getMovies(formAnswers: FormAnswers) {
-    setFavoriteMovie(formAnswers.favoriteMovie);
+    setFavoriteMovie(formAnswers.movieOrSerieUserRequest);
 
     try {
     // send fetch request to /api/recommend
@@ -28,20 +28,10 @@ export default function App() {
     });
 
     const data = await response.json()
-    console.log('Data received on client side', data.movies)
-    const receivedMovies: MovieAPI[]=data.movies
-
-
-    const moviesWithIndexToRender: RecommendedMovie[] = receivedMovies.map((movie, index) => ({
-      title: movie.title,
-      year: movie.release_date ? movie.release_date.slice(0,4) : "unknown",
-      poster_path: movie.poster_path,
-      ai_response: movie.overview,
-      index,
-      isLast: index === receivedMovies.length - 1
-    }));
-
-    setMoviesArr(moviesWithIndexToRender);
+    console.log('[NORMAL CLIENT] Data received on client side', data)
+    const moviesFromServer: MoviesFromServer[] = data.movies
+    // set received data to React State
+    setMoviesArr(moviesFromServer);
   
 
 
@@ -50,8 +40,7 @@ export default function App() {
       throw new Error(data.error ?? "Request failed")
     }
 
-    
-
+  
     // Convert Markdown to HTML
     
 

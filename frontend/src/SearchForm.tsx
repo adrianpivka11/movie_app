@@ -14,9 +14,8 @@ export default function SearchForm({ favoriteMovie, getMovies, handleButtonClick
     const formData = new FormData(event.currentTarget);
 
     const formAnswers: FormAnswers = {
-      favoriteMovie: formData.get("favoriteMovie")?.toString() ?? "",
-      mood: formData.get("mood")?.toString() ?? "",
-      tone: formData.get("tone")?.toString() ?? ""
+      movieOrSerieUserRequest: formData.get("movieOrSerieUserRequest")?.toString() ?? "",
+
     };
 
     void getMovies(formAnswers);
@@ -26,31 +25,18 @@ export default function SearchForm({ favoriteMovie, getMovies, handleButtonClick
     <main className="app">
       <img src="/chatgpt_cats_movie.png" alt="MovieChoice popcorn logo" className="logo" />
       <h1>MovieChoice</h1>
+      <h2>AI Movie Recommendation Engine</h2>
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="favoriteMovie">What's your favorite movie and why?</label>
+        <label htmlFor="favoriteMovie">Describe what kind of movie or series you would like to what...</label>
         <textarea
-          id="favoriteMovie"
-          name="favoriteMovie"
-          placeholder="The Shawshank Redemption because it taught me to never give up hope no matter how hard life gets"
-          defaultValue="The Shawshank Redemption because it taught me to never give up hope no matter how hard life gets"
+          id="movieOrSerieUserRequest"
+          name="movieOrSerieUserRequest"
+          placeholder="Recommend me a movie or/and series about survival and hope, ideally a sci-fi or drama."
+          defaultValue=""
         />
 
-        <label htmlFor="mood">Are you in the mood for something new or a classic?</label>
-        <textarea
-          id="mood"
-          name="mood"
-          placeholder="I want to watch movie classics that were released after 2000"
-          defaultValue="I want to watch movie classics that were released after 2000"
-        />
-
-        <label htmlFor="tone">Do you wanna have fun or do you want something serious?</label>
-        <textarea
-          id="tone"
-          name="tone"
-          placeholder="I want to watch something stupid and fun. I need something simple after stressful day."
-          defaultValue="I want to watch something stupid and fun. I need something simple after stressful day."
-        />
+        
 
         <button type="submit" onClick={handleButtonClick} className= {isLoading ? "button-loading" : ""}> 
           
