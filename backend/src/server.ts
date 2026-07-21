@@ -1,16 +1,12 @@
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
-import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
-import { embed } from "ai";
 import { retrieveSimilarMoviesByRAG } from "./rag.js"
+import { movieChoiceAgent  } from "./agent.js";
 
 
-type RecommendRequest = {
-  movieOrSerieUserRequest: string;
-  
-};
+
 
 const port = Number(process.env.PORT ?? 3001);
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -22,7 +18,6 @@ if (!supabaseUrl || !supabaseApiKey || !openaiApiKey) {
 }
 
 const app = express();
-const openai = new OpenAI({ apiKey: openaiApiKey });
 const supabase = createClient(supabaseUrl, supabaseApiKey);
 
 app.use(cors());
@@ -39,8 +34,9 @@ app.post("/api/recommend", async (req, res, next) => {
     const userQuery = req.body.movieOrSerieUserRequest;
     console.log(`[NORMAL] Server received Client request with film recommendation:`, userQuery)
     
-   
-    const recommendedMovies = await retrieveSimilarMoviesByRAG(userQuery)
+    // Agent here!
+    // const recommendedMovies = await retrieveSimilarMoviesByRAG(userQuery)
+    const recommendedMovies = await movieChoiceAgent(userQuery)
 
     res.json({ movies: recommendedMovies ?? [] });
     console.log(`[FINAL!] These are recommended movies...`,)

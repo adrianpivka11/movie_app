@@ -1,8 +1,8 @@
 import MovieActions from "./MovieActions";
-import type { RecommendedMovie } from "./types";
+import type { MoviesFromServer } from "./types";
 
 type MovieProps = {
-  moviesObj: RecommendedMovie;
+  moviesObj: MoviesFromServer;
   decreaseIndex: () => void;
   increaseIndex: () => void;
   newSearchRefreshPage: () => void;
@@ -29,7 +29,7 @@ export default function Movie({
           <img src={posterUrl} alt={`${moviesObj.title} poster`} className="movie-poster" />
         )}
 
-        <p className="movie-description">{moviesObj.ai_response}</p>
+        <p className="movie-description">{moviesObj.recommendation}</p>
 
         <MovieActions
           movie={moviesObj}
