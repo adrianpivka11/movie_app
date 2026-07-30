@@ -17,9 +17,10 @@ export default function Movie({
   const posterUrl = moviesObj.poster_path
     ? `https://image.tmdb.org/t/p/w500/${moviesObj.poster_path}`
     : undefined;
-
+  console.log('React component Movies Called.')
+  
   return (
-    <main className="app movie-page">
+    <section className="app movie-page">
       <article className="movie-card">
         <h1 className="movie-title">
           {moviesObj.title} {moviesObj.year && <span>({moviesObj.year})</span>}
@@ -38,6 +39,6 @@ export default function Movie({
           newSearchRefreshPage={newSearchRefreshPage}
         />
       </article>
-    </main>
+    </section>
   );
 }

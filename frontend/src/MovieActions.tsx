@@ -1,7 +1,7 @@
-import type { RecommendedMovie } from "./types";
+import type { MoviesFromServer } from "./types";
 
 type MovieActionsProps = {
-  movie: RecommendedMovie;
+  movie: MoviesFromServer;
   decreaseIndex: () => void;
   increaseIndex: () => void;
   newSearchRefreshPage: () => void;

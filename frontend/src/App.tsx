@@ -1,13 +1,15 @@
 import { useState } from "react";
 import SearchForm from "./SearchForm";
 import Movie from "./Movie";
-import type { FormAnswers, MoviesFromServer } from "./types";
+import type { FormAnswers, MoviesFromServer, SeriesFromServer } from "./types";
+import Series from "./Series";
 
 
 
 
 export default function App() {
   const [moviesArr, setMoviesArr] = useState<MoviesFromServer[]>([]);
+  const [seriesArr, setSeriesArr] = useState<SeriesFromServer[]>([])
   const [movieIndex, setMovieIndex] = useState(0);
   const [favoriteMovie, setFavoriteMovie] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,9 +31,14 @@ export default function App() {
 
     const data = await response.json()
     console.log('[NORMAL CLIENT] Data received on client side', data)
-    const moviesFromServer: MoviesFromServer[] = data.movies
-    // set received data to React State
+
+    // set received data to React State - Movies or Series. They will be set to Array with values, which will change the state.
+    // Or they will be set to empty array which will maintain default state and conditional rendering on default.
+    
+    const moviesFromServer: MoviesFromServer[] = data.agenticStructuredData.movies
+    const seriesFromServer: SeriesFromServer[] = data.agenticStructuredData.series
     setMoviesArr(moviesFromServer);
+    setSeriesArr(seriesFromServer)
   
 
 
@@ -69,18 +76,47 @@ export default function App() {
 
   function newSearchRefreshPage() {
     setMoviesArr([]);
+    setSeriesArr([])
     setMovieIndex(0);
     setIsLoading(prevIsLoading => !prevIsLoading)
   }
 
-  return moviesArr.length === 0 ? (
-    <SearchForm getMovies={getMovies} favoriteMovie={favoriteMovie} handleButtonClick={handleButtonClick} isLoading={isLoading} />
-  ) : (
-    <Movie
-      moviesObj={moviesArr[movieIndex]}
-      increaseIndex={increaseIndex}
-      decreaseIndex={decreaseIndex}
-      newSearchRefreshPage={newSearchRefreshPage}
-    />
-  );
+  // conditional rendering of React components - Movies and Series
+
+  return  moviesArr.length !== 0  && seriesArr.length === 0 ?
+        
+                (<Movie
+                  moviesObj={moviesArr[movieIndex]}
+                  increaseIndex={increaseIndex}
+                  decreaseIndex={decreaseIndex}
+                  newSearchRefreshPage={newSearchRefreshPage}
+                />)
+
+          : seriesArr.length !== 0 && moviesArr.length === 0 ? 
+
+                (<Series
+                  series={seriesArr}
+                  newSearchRefreshPage={newSearchRefreshPage}
+                />) 
+
+          
+          : seriesArr.length !== 0 && moviesArr.length !== 0 ? 
+                (
+                  <>
+                    <Movie
+                      moviesObj={moviesArr[movieIndex]}
+                      increaseIndex={increaseIndex}
+                      decreaseIndex={decreaseIndex}
+                      newSearchRefreshPage={newSearchRefreshPage}
+                    />
+                    <Series 
+                      series={seriesArr}
+                      newSearchRefreshPage={newSearchRefreshPage}
+                     />
+                  </>
+                )
+                  
+          : 
+
+            (<SearchForm getMovies={getMovies} favoriteMovie={favoriteMovie} handleButtonClick={handleButtonClick} isLoading={isLoading} />) 
 }

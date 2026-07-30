@@ -36,9 +36,9 @@ app.post("/api/recommend", async (req, res, next) => {
     
     // Agent here!
     // const recommendedMovies = await retrieveSimilarMoviesByRAG(userQuery)
-    const recommendedMovies = await movieChoiceAgent(userQuery)
+    const structuredData = await movieChoiceAgent(userQuery)
 
-    res.json({ movies: recommendedMovies ?? [] });
+    res.json({agenticStructuredData: structuredData ?? [] });
     console.log(`[FINAL!] These are recommended movies...`,)
   } 
   

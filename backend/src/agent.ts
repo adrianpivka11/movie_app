@@ -71,7 +71,7 @@ export async function movieChoiceAgent(query: string) {
 
     // 2. 
     // OpenAI's built-in web search tool, to search if user asked for series recommendation
-    web_search: tool({
+    webSearchTool: tool({
       description: `
         Web search tool to search series for recommendations on IMBd (movies and series database). 
         Use this tool only when user asks for series.
@@ -113,27 +113,57 @@ export async function movieChoiceAgent(query: string) {
 
     
     // --- Extract results ---
-    let answer
     let sources = null;
     let toolUsed = null;
 
     const toolName = 'movieRagTool';
-
+    const tool2Name = 'webSearchTool';
     
     // I have results in steps - find in which step was 'movieRagTool' used. And retrieve its data
-    for (const [i, step] of result.steps.entries()) {
-      const toolResult = step.content.find(
-        (c) => c.type === 'tool-result' && c.toolName === toolName
-      );
 
-      if (toolResult && toolResult.type === 'tool-result') {
-        console.log(`Tool "${toolName}" použitý v kroku ${i}`);
-        console.log('Dáta:', toolResult.output);
-        answer = toolResult.output
-      }
+    // let answer
+    // for (const [i, step] of result.steps.entries()) {
+    //   const toolResult = step.content.find(
+    //     (c) => c.type === 'tool-result' && c.toolName === toolName
+    //   );
+
+    //   if (toolResult && toolResult.type === 'tool-result') {
+    //     console.log(`Tool "${toolName}" použitý v kroku ${i}`);
+    //     console.log('Dáta:', toolResult.output);
+    //     answer = toolResult.output
+    //   }
+    // }
+
+    // 2nd variant 
+
+  
+  let toolResult: Extract<typeof result.steps[number]['content'][number], { type: 'tool-result' }> | undefined;
+  let tool2Result: typeof toolResult;
+
+  for (const [i, step] of result.steps.entries()) {
+    const found = step.content.find(
+      (c) => c.type === 'tool-result' && c.toolName === toolName
+    );
+    const found2 = step.content.find(
+      (c) => c.type === 'tool-result' && c.toolName === tool2Name
+    );
+
+    if (found && found.type === 'tool-result') {
+      toolResult = found;
+      console.log(`Tool "${toolName}" použitý v kroku ${i}`);
     }
+    if (found2 && found2.type === 'tool-result') {
+      tool2Result = found2;
+      console.log(`Tool "${tool2Name}" použitý v kroku ${i}`);
+    }
+  }
 
+  const answer = {
+    movies: toolResult?.output ?? [],
+    series: tool2Result?.output ?? [],
+  };
 
+console.log('Dáta:', answer);
 
     return answer
 

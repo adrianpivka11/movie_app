@@ -15,10 +15,11 @@ export async function retrieveSimilarMoviesByRAG(query:string) {
 
 
     // query to embedding 
-     const { embedding: queryEmbedding } = await embed({
+    const { embedding: queryEmbedding, usage } = await embed({
             model: openai.embedding(EMBEDDING_MODEL),
             value: query,
             });
+    console.log("[NORMAL] Embedding token usage:", usage);
                     
     // RPC similarity search on vector_movie database
     console.log(`[NORMAL] I am sending request to supabase to use similarity search by special rpc function and match_movies function`)

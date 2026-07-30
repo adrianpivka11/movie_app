@@ -14,3 +14,8 @@ export type MoviesFromServer = {
       recommendation: string,}
 
 
+export type SeriesFromServer = {
+    title: string,
+    year: number,
+    recommendation: string,
+}
