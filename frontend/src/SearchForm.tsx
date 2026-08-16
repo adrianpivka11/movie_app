@@ -3,11 +3,12 @@ import type { FormAnswers } from "./types";
 type SearchFormProps = {
   favoriteMovie: string;
   getMovies: (formAnswers: FormAnswers) => Promise<void>;
-  handleButtonClick: () => void;
+  
   isLoading: boolean
+  errorMessage: string;
 };
 
-export default function SearchForm({ favoriteMovie, getMovies, handleButtonClick, isLoading }: SearchFormProps) {
+export default function SearchForm({ favoriteMovie, getMovies, isLoading, errorMessage }: SearchFormProps) {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -38,11 +39,16 @@ export default function SearchForm({ favoriteMovie, getMovies, handleButtonClick
 
         
 
-        <button type="submit" onClick={handleButtonClick} className= {isLoading ? "button-loading" : ""}> 
-          
-        {isLoading ? "is Loading..." : "Search"} 
-
+        <button type="submit" disabled={isLoading} className={isLoading ? "button-loading" : ""}>
+          {isLoading ? "Loading..." : "Search"}
         </button>
+          
+       
+        {errorMessage && (
+          <p className="error-message" role="alert">
+            {errorMessage}
+          </p>
+        )}
       </form>
     </main>
   );

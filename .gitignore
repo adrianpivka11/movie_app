@@ -5,6 +5,8 @@ dist/
 __pycache__/
 *.pyc
 *.tsbuildinfo
+test-results/
+playwright-report/
 
 database/.env
 database/.venv/

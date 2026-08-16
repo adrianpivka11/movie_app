@@ -33,3 +33,10 @@ Run only backend:
 ```powershell
 npm run dev:backend
 ```
+
+
+
+MCP vs. Agentic version: 
+How to quickly revert back to the old mode if MCP is causing problems:
+in backend/src/app.ts or in the imported agent layer
+import { movieChoiceAgentOldVersion as movieChoiceAgent } from "./agentOldVersion.js";

@@ -141,6 +141,18 @@ button:active {
     pointer-events: none
 }
 
+.error-message {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 59, 59, 0.5);
+  border-radius: 12px;
+  background: rgba(255, 59, 59, 0.16);
+  color: #ffe5e5;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
 @keyframes zenLoadingPulse {
     0% {
         transform: scale(0.98);

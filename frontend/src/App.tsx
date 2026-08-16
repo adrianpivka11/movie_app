@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SearchForm from "./SearchForm";
 import Movie from "./Movie";
-import type { FormAnswers, MoviesFromServer, SeriesFromServer } from "./types";
+import type { FormAnswers, MoviesFromServer, RecommendApiResponse, SeriesFromServer } from "./types";
 import Series from "./Series";
 
 
@@ -13,56 +13,63 @@ export default function App() {
   const [movieIndex, setMovieIndex] = useState(0);
   const [favoriteMovie, setFavoriteMovie] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  function handleButtonClick() {
-    setIsLoading(prevIsLoading => !prevIsLoading);
-  }
 
   async function getMovies(formAnswers: FormAnswers) {
     setFavoriteMovie(formAnswers.movieOrSerieUserRequest);
+    setErrorMessage("");
+    setIsLoading(true)
 
     try {
-    // send fetch request to /api/recommend
-    const response = await fetch("/api/recommend", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formAnswers),
-    });
+      // send fetch request to /api/recommend
+      const response = await fetch("/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formAnswers),
+      });
 
-    const data = await response.json()
-    console.log('[NORMAL CLIENT] Data received on client side', data)
+      const data = await response.json() as RecommendApiResponse
+      console.log('[NORMAL CLIENT] Data received on client side', data)
 
-    // set received data to React State - Movies or Series. They will be set to Array with values, which will change the state.
-    // Or they will be set to empty array which will maintain default state and conditional rendering on default.
-    
-    const moviesFromServer: MoviesFromServer[] = data.agenticStructuredData.movies
-    const seriesFromServer: SeriesFromServer[] = data.agenticStructuredData.series
-    setMoviesArr(moviesFromServer);
-    setSeriesArr(seriesFromServer)
-  
+      if (!response.ok) {
+        throw new Error(data.error ?? "Request failed")
+      }
 
+      const structuredData = data.agenticStructuredData;
 
+      if (!structuredData) {
+        throw new Error("Server returned an invalid response.")
+      }
 
-    if (!response.ok) {
-      throw new Error(data.error ?? "Request failed")
-    }
+      // set received data to React State - Movies or Series. They will be set to Array with values, which will change the state.
+      // Or they will be set to empty array which will maintain default state and conditional rendering on default.
+      const moviesFromServer: MoviesFromServer[] = structuredData.movies
+      const seriesFromServer: SeriesFromServer[] = structuredData.series
+      setMoviesArr(moviesFromServer);
+      setSeriesArr(seriesFromServer)
+      // Convert Markdown to HTML
+      
 
-  
-    // Convert Markdown to HTML
-    
+      // Sanitize the HTML to prevent XSS attacks
+      
 
-    // Sanitize the HTML to prevent XSS attacks
-    
-
-    // Render the result
-    
+      // Render the result
+      
   } catch (error) {
-    // Log the error for debugging
-    console.error(error);
+      // Log the error for debugging
+      console.error(error);
 
-    // Display friendly error message
-    
-  }}
+      // Display friendly error message
+      setMoviesArr([]);
+      setSeriesArr([]);
+      setMovieIndex(0);
+      setIsLoading(false);
+      setErrorMessage(getFriendlyErrorMessage(error));
+  
+    } finally {
+    setIsLoading(false)
+  }} 
 
 
 
@@ -78,7 +85,8 @@ export default function App() {
     setMoviesArr([]);
     setSeriesArr([])
     setMovieIndex(0);
-    setIsLoading(prevIsLoading => !prevIsLoading)
+    setErrorMessage("");
+    setIsLoading(false)
   }
 
   // conditional rendering of React components - Movies and Series
@@ -118,5 +126,13 @@ export default function App() {
                   
           : 
 
-            (<SearchForm getMovies={getMovies} favoriteMovie={favoriteMovie} handleButtonClick={handleButtonClick} isLoading={isLoading} />) 
+            (<SearchForm getMovies={getMovies} favoriteMovie={favoriteMovie} isLoading={isLoading} errorMessage={errorMessage} />) 
+}
+
+function getFriendlyErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong. Please try again.";
 }

@@ -1,177 +1,141 @@
-import { movieChoiceAgentSystemPrompt } from "./systemPromptAgent.js"
-import { getEnv } from "./rag.js"
-import { retrieveSimilarMoviesByRAG } from "./rag.js"
-import { webSearchTool } from "./seriesWebSearch.js"
 import { openai } from "@ai-sdk/openai";
-import { generateText, stepCountIs, tool } from "ai"
+import { generateText, stepCountIs, tool } from "ai";
 import { z } from "zod";
+import { callMovieRagMcp, callSeriesSearchMcp } from "./mcp/mcpClient.js";
+import { movieChoiceAgentSystemPrompt } from "./systemPromptAgent.js";
+import type {
+  AgentOutput,
+  MovieRecommendation,
+  SeriesRecommendation,
+} from "./types.js";
 
+const MAX_TOOL_STEPS = 3;
+const TOOL_CALLING_MODEL = getRequiredEnv("TOOL_CALLING_MODEL");
 
+/**
+ * Main recommendation agent used by the Express API.
+ *
+ * The LLM still decides which tools should be used, but the tool
+ * implementations no longer call local functions directly. Instead, each tool
+ * calls a dedicated MCP server through the MCP client layer.
+ *
+ * Final output must stay compatible with the frontend contract:
+ * { movies: MovieRecommendation[], series: SeriesRecommendation[] }.
+ */
+export async function movieChoiceAgent(query: string): Promise<AgentOutput> {
+  console.log(`[MCP Agent] Received question: ${query}`);
 
-const MAX_TOOL_STEPS = 3
-const TOOL_CALLING_MODEL = getEnv("TOOL_CALLING_MODEL")
-
-
-
-// const movieChoiceOutputSchema = z.object({
-//   movies: z
-//     .array(moviesSchema)
-//     .max(5)
-//     .describe(
-//       "Movies returned by movieRagTool. Return an empty array if the movie tool was not used or found no results.",
-//     ),
-
-//   series: z
-//     .array(seriesSchema)
-//     .max(5)
-//     .describe(
-//       "Series created only from the findings of web_search. Return an empty array if web search was not used or found no suitable results.",
-//     ),
-
-//   toolsUsed: z
-//     .array(z.enum(["movieRagTool", "web_search"]))
-//     .max(2)
-//     .describe(
-//       "Names of tools that were actually called. Do not include duplicates.",
-//     ),
-// });
-
-
-
-
-export async function movieChoiceAgent(query: string) {
-  console.log(`[ToolBased] Received question: ${query}`);
-
-
-      // Define the tools available to the model
+  /**
+   * Tool definitions exposed to the LLM during this agent run.
+   *
+   * The names are intentionally kept the same as the old local-agent version
+   * so the system prompt and result extraction logic remain familiar.
+   */
   const tools = {
-    // 1.
-    // Knowledge base tool on similarity search Supabase Movie Database - RAG
     movieRagTool: tool({
       description: `
-        Search the Supabase vector database for movie recommendations.
+        MCP-backed movie recommendation tool.
+        Search the Movie RAG MCP server for movie recommendations.
         Use this tool only when the user asks for movies.
-        The database contains movies, not TV series.
+        The movie database contains movies, not TV series.
       `,
-        inputSchema: z.object({
-            query: z
-            .string()
-            .describe(
-                "A semantic search query containing the user's movie preferences.",
-            ),
-        }),
+      inputSchema: z.object({
+        query: z
+          .string()
+          .describe(
+            "A semantic search query containing the user's movie preferences."
+          ),
+      }),
+      execute: async ({ query }) => {
+        // Calls the remote/local Movie RAG MCP service and unwraps its movies array.
+        const result = await callMovieRagMcp(query);
+        return result.movies;
+      },
+    }),
 
-        execute: async ({ query }) => {
-          const result = await retrieveSimilarMoviesByRAG(query);
-          // console.log(`[ToolBased] data retrieved by movieRagTool:`)
-          // console.log(result)
-          return result;
-        },
-        }),
-
-    // 2. 
-    // OpenAI's built-in web search tool, to search if user asked for series recommendation
     webSearchTool: tool({
       description: `
-        Web search tool to search series for recommendations on IMBd (movies and series database). 
-        Use this tool only when user asks for series.
-        Use this tool only to search for series.`,
-      
+        MCP-backed TV series recommendation tool.
+        Search the Series Search MCP server for TV series recommendations.
+        Use this tool only when the user asks for series, TV shows, or miniseries.
+      `,
       inputSchema: z.object({
-            query: z
-            .string()
-            .describe(
-                "User's request that will contain description of series preferences",
-            ),
-        }),
-
+        query: z
+          .string()
+          .describe(
+            "A semantic search query containing the user's TV series preferences."
+          ),
+      }),
       execute: async ({ query }) => {
-          const result = await webSearchTool(query);
-          // console.log(`[ToolBased] data retrieved by movieRagTool:`)
-          // console.log(result)
-          return result;
-        },
-
+        // Calls the remote/local Series Search MCP service and unwraps its series array.
+        const result = await callSeriesSearchMcp(query);
+        return result.series;
+      },
     }),
   };
 
   try {
-    // Single call to generateText, letting the LLM decide on tool use
     const result = await generateText({
       model: openai.responses(TOOL_CALLING_MODEL),
-      tools: tools,
+      tools,
       stopWhen: stepCountIs(MAX_TOOL_STEPS),
-      // System prompt guides the LLM on its role and when to use toolsC
       system: movieChoiceAgentSystemPrompt,
       prompt: query,
     });
 
+    let movieResults: MovieRecommendation[] = [];
+    let seriesResults: SeriesRecommendation[] = [];
 
+    /**
+     * AI SDK stores tool call outputs inside generation steps.
+     * This loop extracts the latest result produced by each MCP-backed tool
+     * and normalizes everything into the stable AgentOutput shape.
+     */
+    for (const [i, step] of result.steps.entries()) {
+      const movieToolResult = step.content.find(
+        (content) =>
+          content.type === "tool-result" && content.toolName === "movieRagTool"
+      );
+      const seriesToolResult = step.content.find(
+        (content) =>
+          content.type === "tool-result" && content.toolName === "webSearchTool"
+      );
 
+      if (movieToolResult && movieToolResult.type === "tool-result") {
+        movieResults = movieToolResult.output as MovieRecommendation[];
+        console.log(`[MCP Agent] movieRagTool used in step ${i}`);
+      }
 
-    console.log('[ToolBased] VÝSLEDKY.');
-
-    
-    // --- Extract results ---
-    let sources = null;
-    let toolUsed = null;
-
-    const toolName = 'movieRagTool';
-    const tool2Name = 'webSearchTool';
-    
-    // I have results in steps - find in which step was 'movieRagTool' used. And retrieve its data
-
-    // let answer
-    // for (const [i, step] of result.steps.entries()) {
-    //   const toolResult = step.content.find(
-    //     (c) => c.type === 'tool-result' && c.toolName === toolName
-    //   );
-
-    //   if (toolResult && toolResult.type === 'tool-result') {
-    //     console.log(`Tool "${toolName}" použitý v kroku ${i}`);
-    //     console.log('Dáta:', toolResult.output);
-    //     answer = toolResult.output
-    //   }
-    // }
-
-    // 2nd variant 
-
-  
-  let toolResult: Extract<typeof result.steps[number]['content'][number], { type: 'tool-result' }> | undefined;
-  let tool2Result: typeof toolResult;
-
-  for (const [i, step] of result.steps.entries()) {
-    const found = step.content.find(
-      (c) => c.type === 'tool-result' && c.toolName === toolName
-    );
-    const found2 = step.content.find(
-      (c) => c.type === 'tool-result' && c.toolName === tool2Name
-    );
-
-    if (found && found.type === 'tool-result') {
-      toolResult = found;
-      console.log(`Tool "${toolName}" použitý v kroku ${i}`);
+      if (seriesToolResult && seriesToolResult.type === "tool-result") {
+        seriesResults = seriesToolResult.output as SeriesRecommendation[];
+        console.log(`[MCP Agent] webSearchTool used in step ${i}`);
+      }
     }
-    if (found2 && found2.type === 'tool-result') {
-      tool2Result = found2;
-      console.log(`Tool "${tool2Name}" použitý v kroku ${i}`);
-    }
+
+    const answer: AgentOutput = {
+      movies: movieResults,
+      series: seriesResults,
+    };
+
+    console.log("[MCP Agent] Agentic recommendation successful:", answer);
+
+    return answer;
+  } catch (error) {
+    console.error("[MCP Agent] Agentic recommendation flow failed, either on movieRagTool or webSearchTool:", error);
+    throw error;
+  }
+}
+
+/**
+ * Reads a required environment variable and throws a clear startup/runtime
+ * error when it is missing.
+ */
+function getRequiredEnv(name: string) {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`[ERROR] Missing environment variable: ${name}`);
   }
 
-  const answer = {
-    movies: toolResult?.output ?? [],
-    series: tool2Result?.output ?? [],
-  };
-
-console.log('Dáta:', answer);
-
-    return answer
-
-} 
-
-catch (error) {
-    console.error('[ToolBased] Error in RAG process:', error);
-    const errorAnswer =
-      'I encountered an error while processing your request using tool calling. Please try again later.';
-    return { answer: errorAnswer, sources: null, toolUsed: null };
-  }}
+  return value;
+}

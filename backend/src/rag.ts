@@ -1,6 +1,6 @@
 import { embed } from 'ai'
 import { supabase } from "./supabaseClient.js";
-import type { RecommendedMovie, MovieAPI, RecommendationsByLLM } from "./types.js";
+import type { RecommendedMovie, MovieAPI, RecommendationsByLLM, MovieRecommendation } from "./types.js";
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import { openai } from "@ai-sdk/openai";
@@ -11,7 +11,7 @@ const EMBEDDING_MODEL = getEnv('EMBEDDING_MODEL');
 
 
 // function/Agent tool to retrieve movies by RAG from Supabase PostgreSQL vector DB
-export async function retrieveSimilarMoviesByRAG(query:string) {
+export async function retrieveSimilarMoviesByRAG(query:string): Promise<MovieRecommendation[]> {
 
 
     // query to embedding 
@@ -103,7 +103,7 @@ export async function retrieveSimilarMoviesByRAG(query:string) {
     
 
     // create new array of movies with recommendation of LLM, to recommended movies - here: const moviesWithIndex: RecommendedMovie[]
-    const moviesWithRecommendations = moviesWithIndex.map(movie => {
+    const moviesWithRecommendations: MovieRecommendation[] = moviesWithIndex.map(movie => {
     const matchingRecommendation = recommendationArr.find(
         item => item.index === movie.index
         )

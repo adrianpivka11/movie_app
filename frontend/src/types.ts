@@ -8,7 +8,6 @@ export type MoviesFromServer = {
       title:string,
       year: string,
       poster_path: string,
-      overview: string,
       index: number,
       isLast: boolean,
       recommendation: string,}
@@ -16,6 +15,25 @@ export type MoviesFromServer = {
 
 export type SeriesFromServer = {
     title: string,
-    year: number,
+    year: number | null,
     recommendation: string,
 }
+
+export type AgenticStructuredData = {
+    movies: MoviesFromServer[],
+    series: SeriesFromServer[],
+}
+
+export type RecommendApiSuccessResponse = {
+    agenticStructuredData: AgenticStructuredData,
+    error?: never,
+}
+
+export type RecommendApiErrorResponse = {
+    error: string,
+    agenticStructuredData?: never,
+}
+
+export type RecommendApiResponse =
+    | RecommendApiSuccessResponse
+    | RecommendApiErrorResponse

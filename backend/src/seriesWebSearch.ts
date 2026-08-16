@@ -12,6 +12,7 @@ import { getEnv } from './rag.js'
 import { openai } from "@ai-sdk/openai";
 import { generateText, Output, stepCountIs } from 'ai';
 import { z } from 'zod';
+import type { SeriesRecommendation } from './types.js';
 
 const OPENAI_MODEL = getEnv('OPENAI_MODEL');
 const OPENAI_MODEL_NON_REASONING = getEnv('OPENAI_MODEL_NON_REASONING');
@@ -56,7 +57,7 @@ export const seriesWebSearchOutputSchema = z.object({
 
 
 
-export async function webSearchTool(query: string) {
+export async function webSearchTool(query: string): Promise<SeriesRecommendation[]> {
     // query from user
     
 

@@ -6,6 +6,16 @@ export type RecommendedMovie = {
       index: number,
       isLast: boolean,}
 
+export type MovieRecommendation = Omit<RecommendedMovie, "overview"> & {
+      recommendation: string,
+}
+
+export type SeriesRecommendation = {
+      title: string,
+      year: number | null,
+      recommendation: string,
+}
+
 
 export type MovieAPI = {
       director:string, 
@@ -26,3 +36,9 @@ export type RecommendationsByLLM = {
       index: number,
       recommendation: string,
 }
+
+
+export type AgentOutput = {
+  movies: MovieRecommendation[];
+  series: SeriesRecommendation[];
+};
