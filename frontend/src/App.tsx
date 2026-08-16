@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchForm from "./SearchForm";
 import Movie from "./Movie";
 import type { FormAnswers, MoviesFromServer, RecommendApiResponse, SeriesFromServer } from "./types";
@@ -15,6 +15,38 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    const warmUpServers = async () => {
+      try {
+        console.log("[CLIENT] Warm-up request to backend has been sent.");
+        const response = await fetch("/api/warmup", {
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) {
+          console.warn("[CLIENT] Warm-up endpoint returned an error status.");
+        }
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        console.warn("[CLIENT] Warm-up request failed.", error);
+      }
+    };
+
+    warmUpServers();
+
+
+    return () => {
+      // stops frontend from waitting for response from server
+      abortController.abort();
+    };
+  }, []);
+
 
   async function getMovies(formAnswers: FormAnswers) {
     setFavoriteMovie(formAnswers.movieOrSerieUserRequest);
@@ -30,7 +62,7 @@ export default function App() {
       });
 
       const data = await response.json() as RecommendApiResponse
-      console.log('[NORMAL CLIENT] Data received on client side', data)
+      console.log('[CLIENT] Data received on client side', data)
 
       if (!response.ok) {
         throw new Error(data.error ?? "Request failed")

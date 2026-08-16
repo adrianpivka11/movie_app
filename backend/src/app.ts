@@ -1,10 +1,15 @@
 import cors from "cors";
 import express from "express";
+import type { McpWarmupResult } from "./mcp/mcpClient.js";
 import type { AgentOutput } from "./types.js";
 
 // A small interface for the recommendation use case.
 // In production this calls the real AI agent, but tests can pass a fake handler.
 type RecommendationHandler = (query: string) => Promise<AgentOutput>;
+
+// A small interface for waking/checking remote MCP services.
+// In production this pings MCP /health endpoints, but tests can pass a fake handler.
+type WarmupHandler = () => Promise<McpWarmupResult[]>;
 
 /**
  * Creates and configures the Express application.
@@ -13,7 +18,8 @@ type RecommendationHandler = (query: string) => Promise<AgentOutput>;
  * tests can import createApp() and call routes without opening a real network port.
  */
 export function createApp(
-  recommendationHandler: RecommendationHandler = runMovieChoiceAgent
+  recommendationHandler: RecommendationHandler = runMovieChoiceAgent,
+  warmupHandler: WarmupHandler = runWarmupMcpServices
 ) {
   const app = express();
 
@@ -26,6 +32,27 @@ export function createApp(
   // Lightweight endpoint used to verify that the backend process is alive.
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok" });
+  });
+
+  // Lightweight endpoint called by the frontend when the app opens.
+  // It lets the main backend wake/check both MCP services before the user searches.
+  app.get("/api/warmup", async (_req, res) => {
+    try {
+      const services = await warmupHandler();
+      const allServicesReady = services.every((service) => service.ok);
+
+      res.json({
+        status: allServicesReady ? "ok" : "partial",
+        services,
+      });
+    } catch (error) {
+      console.error("[Warmup Error]", error);
+      res.json({
+        status: "failed",
+        services: [],
+        error: "Warm-up request failed.",
+      });
+    }
   });
 
   // Main recommendation endpoint called by the React frontend.
@@ -42,7 +69,7 @@ export function createApp(
       }
 
       console.log(
-        `[NORMAL] Server received Client request with film recommendation:`,
+        `[SERVER - RECEIVED REQUESTED] with type of recommendation:`,
         userQuery
       );
 
@@ -51,7 +78,7 @@ export function createApp(
       const structuredData = await recommendationHandler(userQuery.trim());
 
       res.json({ agenticStructuredData: structuredData });
-      console.log(`[FINAL!] These are recommended movies...`);
+      console.log(`[SERVER - SENDING RESPONSE] sending recommandations`);
     } catch (error) {
       // Passing errors to next() lets the shared error middleware format the response.
       next(error);
@@ -90,6 +117,12 @@ export default app;
 async function runMovieChoiceAgent(query: string) {
   const { movieChoiceAgent } = await import("./agent.js");
   return movieChoiceAgent(query);
+}
+
+// Dynamically imports the MCP warmup client only when the warmup endpoint runs.
+async function runWarmupMcpServices() {
+  const { warmupMcpServices } = await import("./mcp/mcpClient.js");
+  return warmupMcpServices();
 }
 
 // Custom error type for errors where we intentionally choose the HTTP status

@@ -18,6 +18,24 @@ describe("Express app", () => {
     expect(response.body).toEqual({ status: "ok" });
   });
 
+  it("responds to the warmup endpoint with MCP service results", async () => {
+    const warmupResults = [
+      { service: "movie-rag" as const, ok: true, statusCode: 200 },
+      { service: "series-search" as const, ok: true, statusCode: 200 },
+    ];
+    const warmupHandler = vi.fn().mockResolvedValue(warmupResults);
+    const app = createApp(async () => emptyAgentOutput, warmupHandler);
+
+    const response = await request(app).get("/api/warmup");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      status: "ok",
+      services: warmupResults,
+    });
+    expect(warmupHandler).toHaveBeenCalledOnce();
+  });
+
   it("returns 400 when recommendation request is empty", async () => {
     const recommendationHandler = vi.fn().mockResolvedValue(emptyAgentOutput);
     const app = createApp(recommendationHandler);

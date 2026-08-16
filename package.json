@@ -5,8 +5,11 @@
   "description": "Movie recommendation app with React, Express, Supabase, and OpenAI embeddings.",
   "scripts": {
     "dev": "npm-run-all --parallel dev:frontend dev:backend",
+    "dev:mcp": "npm-run-all --parallel dev dev:mcp:movie-rag dev:mcp:series-search",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "npm --prefix backend run dev",
+    "dev:mcp:movie-rag": "npm --prefix backend run dev:mcp:movie-rag",
+    "dev:mcp:series-search": "npm --prefix backend run dev:mcp:series-search",
     "build": "npm --prefix frontend run build && npm --prefix backend run build",
     "install:all": "npm install && npm --prefix frontend install && npm --prefix backend install",
     "test": "npm-run-all --parallel test:backend test:frontend",
