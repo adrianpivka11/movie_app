@@ -4,6 +4,7 @@ import Movie from "./Movie";
 import type { FormAnswers, MoviesFromServer, RecommendApiResponse, SeriesFromServer } from "./types";
 import Series from "./Series";
 
+const API_BASE_URL="https://movie-app-backend-gq5e.onrender.com"
 
 
 
@@ -22,7 +23,7 @@ export default function App() {
     const warmUpServers = async () => {
       try {
         console.log("[CLIENT] Warm-up request to backend has been sent.");
-        const response = await fetch("/api/warmup", {
+        const response = await fetch(`${API_BASE_URL}/api/warmup`, {
           signal: abortController.signal,
         });
 
@@ -55,7 +56,7 @@ export default function App() {
 
     try {
       // send fetch request to /api/recommend
-      const response = await fetch("/api/recommend", {
+      const response = await fetch(`${API_BASE_URL}/api/recommend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formAnswers),
