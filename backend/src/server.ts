@@ -11,9 +11,9 @@ app.listen(port, () => {
 
 function validateRuntimeEnv() {
   const requiredEnvVars = [
-    "SUPABASE_URL",
-    "SUPABASE_API_KEY",
     "OPENAI_API_KEY",
+    "TOOL_CALLING_MODEL",
+    ...getDeploymentOnlyEnvVars(),
   ];
 
   const missingEnvVars = requiredEnvVars.filter((name) => !process.env[name]);
@@ -23,4 +23,19 @@ function validateRuntimeEnv() {
       `Missing required environment variables: ${missingEnvVars.join(", ")}.`
     );
   }
+}
+
+function getDeploymentOnlyEnvVars() {
+  if (!isDeploymentRuntime()) {
+    return [];
+  }
+
+  return [
+    "MOVIE_RAG_MCP_URL",
+    "SERIES_SEARCH_MCP_URL",
+  ];
+}
+
+function isDeploymentRuntime() {
+  return process.env.NODE_ENV === "production" || process.env.RENDER === "true";
 }

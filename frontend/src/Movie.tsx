@@ -17,7 +17,6 @@ export default function Movie({
   const posterUrl = moviesObj.poster_path
     ? `https://image.tmdb.org/t/p/w500/${moviesObj.poster_path}`
     : undefined;
-  console.log('React component Movies Called.')
   
   return (
     <section className="app movie-page">

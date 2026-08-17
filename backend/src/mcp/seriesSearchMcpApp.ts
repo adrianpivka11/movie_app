@@ -7,6 +7,7 @@ import {
   type SeriesSearchToolInput,
   type SeriesSearchToolResponse,
 } from "./sharedTypes.js";
+import { requireMcpApiKey } from "./mcpAuth.js";
 
 type SeriesSearchHandler = (
   query: string
@@ -53,7 +54,7 @@ export function createSeriesSearchMcpApp(
     res.json({ status: "ok", service: "series-search-mcp" });
   });
 
-  app.post("/mcp", async (req, res, next) => {
+  app.post("/mcp", requireMcpApiKey, async (req, res, next) => {
     const server = createSeriesSearchMcpServer(seriesSearchHandler);
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,

@@ -1,3 +1,4 @@
+import request from "supertest";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   callMovieRagMcp,
@@ -12,6 +13,18 @@ afterEach(() => {
 });
 
 describe("MCP server contracts", () => {
+  it("rejects MCP tool requests without the configured API key", async () => {
+    vi.stubEnv("MCP_API_KEY", "test-secret");
+    const movieHandler = vi.fn().mockResolvedValue({ movies: [] });
+    const app = createMovieRagMcpApp(movieHandler);
+
+    const response = await request(app).post("/mcp").send({});
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: "Unauthorized MCP request." });
+    expect(movieHandler).not.toHaveBeenCalled();
+  });
+
   it("movie RAG MCP server returns { movies }", async () => {
     const movieHandler = vi.fn().mockResolvedValue({
       movies: [

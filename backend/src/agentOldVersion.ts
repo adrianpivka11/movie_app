@@ -1,5 +1,5 @@
 import { movieChoiceAgentSystemPrompt } from "./systemPromptAgent.js"
-import { getEnv } from "./rag.js"
+import { getEnv } from "./env.js"
 import { retrieveSimilarMoviesByRAG } from "./rag.js"
 import { webSearchTool } from "./seriesWebSearch.js"
 import { openai } from "@ai-sdk/openai";

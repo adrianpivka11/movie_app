@@ -7,6 +7,7 @@ import {
   type MovieRagToolInput,
   type MovieRagToolResponse,
 } from "./sharedTypes.js";
+import { requireMcpApiKey } from "./mcpAuth.js";
 
 type MovieRagHandler = (query: string) => Promise<MovieRagToolResponse>;
 
@@ -51,7 +52,7 @@ export function createMovieRagMcpApp(
     res.json({ status: "ok", service: "movie-rag-mcp" });
   });
 
-  app.post("/mcp", async (req, res, next) => {
+  app.post("/mcp", requireMcpApiKey, async (req, res, next) => {
     const server = createMovieRagMcpServer(movieRagHandler);
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,

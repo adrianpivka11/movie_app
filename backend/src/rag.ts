@@ -4,6 +4,7 @@ import type { RecommendedMovie, MovieAPI, RecommendationsByLLM, MovieRecommendat
 import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import { openai } from "@ai-sdk/openai";
+import { getEnv } from "./env.js";
 
 
 
@@ -19,10 +20,10 @@ export async function retrieveSimilarMoviesByRAG(query:string): Promise<MovieRec
             model: openai.embedding(EMBEDDING_MODEL),
             value: query,
             });
-    console.log("[NORMAL] Embedding token usage:", usage);
+    console.log("[RAG function] Embedding token usage:", usage);
                     
     // RPC similarity search on vector_movie database
-    console.log(`[NORMAL] I am sending request to supabase to use similarity search by special rpc function and match_movies function`)
+    console.log(`[RAG function] I am sending request to supabase to use similarity search by special rpc function and match_movies function`)
     const { data, error } = await supabase.rpc("match_movies", {
       query_embedding: queryEmbedding,
       match_threshold: 0.7,
@@ -123,15 +124,3 @@ export async function retrieveSimilarMoviesByRAG(query:string): Promise<MovieRec
     return moviesWithRecommendations         
   }
 
-
-
-// check and get ENVs 
-export function getEnv(name: string): string {
-  const value = process.env[name];
-
-  if (!value) {
-    throw new Error(`[ERROR] Missing environment variable: ${name}`);
-  }
-
-  return value;
-}

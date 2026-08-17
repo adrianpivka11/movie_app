@@ -8,7 +8,7 @@
 // Next possible optimalization: In call2 for recommendation, switch model for open source model model: google('gemma-3-27b-it'),  5-10% decrease
 
 
-import { getEnv } from './rag.js'
+import { getEnv } from './env.js'
 import { openai } from "@ai-sdk/openai";
 import { generateText, Output, stepCountIs } from 'ai';
 import { z } from 'zod';

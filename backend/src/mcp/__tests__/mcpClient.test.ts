@@ -38,6 +38,32 @@ describe("MCP client", () => {
     }
   });
 
+  it("sends the configured MCP API key when calling protected MCP services", async () => {
+    const app = createMovieRagMcpApp(async () => ({
+      movies: [
+        {
+          title: "Blade Runner 2049",
+          year: "2017",
+          poster_path: "/blade-runner-2049.jpg",
+          index: 0,
+          isLast: true,
+          recommendation: "A moody sci-fi recommendation.",
+        },
+      ],
+    }));
+    const server = await startTestServer(app);
+    vi.stubEnv("MCP_API_KEY", "test-secret");
+    vi.stubEnv("MOVIE_RAG_MCP_URL", `${server.baseUrl}/mcp`);
+
+    try {
+      const result = await callMovieRagMcp("Recommend atmospheric sci-fi.");
+
+      expect(result.movies[0]?.title).toBe("Blade Runner 2049");
+    } finally {
+      await server.close();
+    }
+  });
+
   it("calls the series search MCP server and returns series", async () => {
     const app = createSeriesSearchMcpApp(async () => ({
       series: [

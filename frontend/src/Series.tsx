@@ -8,9 +8,6 @@ type SeriesProps = {
 
 
 export default function Series({ series, newSearchRefreshPage }: SeriesProps) {
-  console.log('React component Series Called.',series)
-
-
   return (
     <section className="app">
       
