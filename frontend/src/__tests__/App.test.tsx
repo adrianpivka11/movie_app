@@ -97,13 +97,16 @@ describe("App", () => {
     await submitSearch("Recommend survival movies.");
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith("/api/recommend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          movieOrSerieUserRequest: "Recommend survival movies.",
-        }),
-      });
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/api\/recommend$/),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            movieOrSerieUserRequest: "Recommend survival movies.",
+          }),
+        }
+      );
     });
   });
 });

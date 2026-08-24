@@ -11,8 +11,6 @@ app.listen(port, () => {
 
 function validateRuntimeEnv() {
   const requiredEnvVars = [
-    "OPENAI_API_KEY",
-    "TOOL_CALLING_MODEL",
     ...getDeploymentOnlyEnvVars(),
   ];
 
@@ -33,6 +31,7 @@ function getDeploymentOnlyEnvVars() {
   return [
     "MOVIE_RAG_MCP_URL",
     "SERIES_SEARCH_MCP_URL",
+    "MCP_API_KEY",
   ];
 }
 
