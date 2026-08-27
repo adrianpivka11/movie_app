@@ -11,6 +11,8 @@ app.listen(port, () => {
 
 function validateRuntimeEnv() {
   const requiredEnvVars = [
+    "OPENAI_API_KEY",
+    "TOOL_CALLING_MODEL",
     ...getDeploymentOnlyEnvVars(),
   ];
 
