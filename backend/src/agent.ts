@@ -78,7 +78,7 @@ export async function movieChoiceAgent(query: string): Promise<AgentOutput> {
     const result = await generateText({
       model: openai.responses(TOOL_CALLING_MODEL),
       tools,
-      toolChoice: "auto",
+      toolChoice: "required",
       stopWhen: stepCountIs(MAX_TOOL_STEPS),
       system: movieChoiceAgentSystemPrompt,
       prompt: query,
